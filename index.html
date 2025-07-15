@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Happy 20th Birthday, Vatraxaki MOU! 🐸💚</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Comic Sans MS', cursive;
+      background: #e6fce4;
+      color: #2d4c1e;
+      overflow: hidden;
+      cursor: none;
+    }
+    #heartCursor {
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      font-size: 24px;
+      color: #e25555;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease;
+    }
+    #canvas-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
+    #main-content {
+      position: relative;
+      z-index: 2;
+    }
+    .chapter {
+      display: none;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      padding: 40px;
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      opacity: 0;
+    }
+    .chapter.active {
+      display: flex;
+      opacity: 1;
+      transform: translateX(0);
+    }
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+    .reasons-list {
+      text-align: left;
+      margin: 0 auto 30px;
+      font-size: 1.15em;
+      max-width: 700px;
+      background: #f7fff7;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 2px 8px #0001;
+    }
+    .reasons-list p, .reasons-list li {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    button {
+      background: #98dd96;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin: 10px;
+      z-index: 3;
+    }
+    button:hover {
+      background: #78c878;
+    }
+    .frog-emoji {
+      font-size: 3em;
+      margin-bottom: 10px;
+      display: inline-block;
+      transition: transform 0.3s;
+      cursor: pointer;
+      user-select: none;
+    }
+    .frog-emoji.hop {
+      animation: hop 0.5s;
+    }
+    @keyframes hop {
+      0% { transform: translateY(0);}
+      50% { transform: translateY(-60px) scale(1.2);}
+      100% { transform: translateY(0);}
+    }
+    #fly-game {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    #fly {
+      font-size: 2em;
+      cursor: pointer;
+      position: relative;
+      display: inline-block;
+    }
+    .milestones {
+      text-align: left;
+      margin: 0 auto 24px;
+      font-size: 1.15em;
+      max-width: 390px;
+      background: #f7fff7;
+      border-radius: 18px;
+      padding: 20px 32px;
+      box-shadow: 0 2px 8px #0001;
+    }
+    .milestones li:before {
+      content: "•";
+      color: #4e9c4f;
+      display: inline-block;
+      width: 1em;
+      margin-left: -1em;
+    }
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+    .gallery img {
+      width: 180px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 20px;
+      border: 2px solid #98dd96;
+      box-shadow: 0 2px 8px #0002;
+    }
+    #countdown {
+      font-size: 2em;
+      font-weight: bold;
+      margin: 20px auto;
+      color: #32732c;
+      letter-spacing: 2px;
+    }
+    #confettiCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 10;
+      display: none;
+    }
+    #musicBtn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 1000;
+      background: #e6fce4;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      border: 2px solid #98dd96;
+      font-size: 1.5em;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #0001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+  <div id="heartCursor">❤️</div>
+
+  <div id="canvas-container"></div>
+  <div id="main-content">
+    <audio id="bgMusic" src="background-song.mp3" loop preload="auto"></audio>
+    <button id="musicBtn" onclick="toggleMusic()">🎵</button>
+    <audio id="frogSound" src="46241__esformouse__frog.wav" preload="auto"></audio>
+
+    <!-- 1. Greeting (boxed) -->
+    <div class="chapter active" id="chapter-1">
+      <div class="frog-emoji" id="greetingFrog" onclick="frogGreetingJump(this)">🐸</div>
+      <h1>Happy 20th Birthday, Vatraxaki MOU 💚</h1>
+      <div class="reasons-list">
+        <p>My sweet Alisha,<br>
+        Welcome to your magical frog birthday adventure!<br>
+        Click the frog for a surprise 🐸💚</p>
+      </div>
+      <button onclick="nextChapter()">Next →</button>
+    </div>
+
+    <!-- 2. Fly Game -->
+    <div class="chapter" id="chapter-2">
+      <div class="frog-emoji" onclick="frogGreetingJump(this)">🐸</div>
+      <h1>Let’s Play: Catch the Fly!</h1>
+      <div id="fly-game">
+        <span id="fly" onclick="catchFly()">🪰</span>
+        <p id="fly-instr">Help Froggy catch the fly by clicking it!<br>(Even the happiest frogs need snacks!)</p>
+      </div>
+      <button id="flyNextBtn" style="display:none;" onclick="nextChapter()">Next →</button>
+    </div>
+
+    <!-- 3. Timeline -->
+    <div class="chapter" id="chapter-3">
+      <div class="frog-emoji" onclick="frogGreetingJump(this)">🌿</div>
+      <h1>Our Timeline</h1>
+      <ul class="milestones">
+        <li><strong>Nov 7, 2024:</strong> We first texted 💫</li>
+        <li><strong>Dec 23, 2024:</strong> We first met ❤️</li>
+        <li><strong>Jan 19, 2024:</strong> We got in a Relationship 🥰</li>
+      </ul>
+      <p>Every milestone with you is a leap my heart will never forget, My blackberry. 🐸💌</p>
+      <button onclick="nextChapter()">Next →</button>
+    </div>
+
+    <!-- 4. Love Notes -->
+    <div class="chapter" id="chapter-4">
+      <div class="frog-emoji" onclick="frogGreetingJump(this)">💌</div>
+      <h1>Love Notes</h1>
+      <div class="reasons-list">
+        <p>Agapula mou, you are the lily pad my heart always returns to.<br>
+        You are my brightest star, my sweetest dream, and my favorite adventure.<br>
+        Thank you for being my calm in chaos, my laughter in silence, and my strength when I falter.<br>
+        I don’t just love you—I’m endlessly grateful for you.<br>
+        I love you with every ribbit, every giggle, and every leap, Vatraxaki MOU. 🐸🌹</p>
+      </div>
+      <button onclick="nextChapter()">Next →</button>
+    </div>
+
+    <!-- 5. Gallery -->
+    <div class="chapter" id="chapter-5">
+      <div class="frog-emoji" onclick="frogGreetingJump(this)">📸</div>
+      <h1>Our Memories</h1>
+      <div class="gallery">
+        <img src="your-photo1.jpg" alt="Memory 1"/>
+        <img src="your-photo2.jpg" alt="Memory 2"/>
+        <img src="your-photo3.jpg" alt="Memory 3"/>
+        <img src="your-photo4.jpg" alt="Memory 4"/>
+      </div>
+      <p>Every moment with you is a treasure.<br><em>Here’s to many more memories, my love!</em></p>
+      <button onclick="nextChapter()">Next →</button>
+    </div>
+
+    <!-- 6. Reasons & Song -->
+    <div class="chapter" id="chapter-6">
+      <div class="frog-emoji" onclick="frogGreetingJump(this)">🎵</div>
+      <h1>10 Reasons You are the Coolest Girlfriend</h1>
+      <ul class="reasons-list">
+        <li>1. Your laugh makes my world brighter.</li>
+        <li>2. You are sweet and kind.</li>
+        <li>3. Your hugs feel like home.</li>
+        <li>4. Your smile can fix any bad day.</li>
+        <li>5. You make every ordinary moment extraordinary.</li>
+        <li>6. You’re smart, silly, and beautiful inside and out.</li>
+        <li>7. You support me, dream with me, and challenge me.</li>
+        <li>8. You are hardworking and you never give up.</li>
+        <li>9. With you, I can always be myself.</li>
+        <li>10. You always trying to improve even on things you dont like. 💚</li>
+      </ul>
+      <button onclick="toggleSong()">Play Our Song 🎶</button>
+      <audio id="song" src="Project Name-VEED.mp3"></audio>
+      <button onclick="nextChapter()">Next →</button>
+    </div>
+
+    <!-- 7. Final & Countdown -->
+    <div class="chapter" id="chapter-7">
+      <div class="frog-emoji" onclick="frogGreetingJump(this)">🎂</div>
+      <h1>Happy Birthday, Vatraxaki MOU!</h1>
+      <div class="reasons-list">
+        <p>My love,I hope you have an amazing birthday even without me and may this year bring us more giggles, more adventures, and more cuddles.<br>
+        No matter where you are, my heart is always hugging you.<br>
+        Next hug in:</p>
+        <div id="countdown"></div>
+        <audio id="birthdaySong" src="happy-birthday-music-300687.mp3"></audio>
+        <p>I love you more every hop of the way.<br><strong>Forever your Dura 🐸❤️</strong></p>
+      </div>
+      <canvas id="confettiCanvas"></canvas>
+      <button id="celebrateBtn">Celebrate 🎉</button>
+      <button onclick="restart()">Hop Again 🔀</button>
+    </div>
+  </div>
+
+  <script>
+    // Heart cursor
+    const heartCursor = document.getElementById('heartCursor');
+    document.addEventListener('mousemove', e => {
+      heartCursor.style.left = e.clientX + 'px';
+      heartCursor.style.top = e.clientY + 'px';
+    });
+
+    // State
+    let current = 1, songPlaying = false, musicPlaying = false;
+    const frogName = "Froggy", musicBtn = document.getElementById('musicBtn');
+    const nextHugDate = new Date("2025-09-20T18:00:00");
+    window.addEventListener('DOMContentLoaded', ()=> musicBtn.textContent = '🎵');
+
+    // Slide animations between chapters
+    function nextChapter() {
+      const prevEl = document.getElementById(`chapter-${current}`);
+      const nextEl = document.getElementById(`chapter-${current + 1}`);
+
+      gsap.to(prevEl, {
+        x: -window.innerWidth,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power2.inOut",
+        onComplete: () => {
+          prevEl.classList.remove('active');
+          gsap.set(prevEl, { x: 0, opacity: 1 });
+        }
+      });
+
+      gsap.set(nextEl, { x: window.innerWidth, opacity: 0 });
+      nextEl.classList.add('active');
+      gsap.to(nextEl, {
+        x: 0,
+        opacity: 1,
+        duration: 0.6,
+        ease: "power2.inOut",
+        onComplete: () => {
+          current++;
+          if (current === 2) startFlyGame();
+          if (current === 7) {
+            showConfetti();
+            startCountdown();
+            playBirthdaySong();
+          }
+        }
+      });
+    }
+
+    function restart() {
+      const currEl = document.getElementById(`chapter-${current}`);
+      const firstEl = document.getElementById('chapter-1');
+      gsap.to(currEl, {
+        x: window.innerWidth,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power2.inOut",
+        onComplete: () => {
+          currEl.classList.remove('active');
+          gsap.set(currEl, { x: 0, opacity: 1 });
+          current = 1;
+          gsap.set(firstEl, { x: -window.innerWidth, opacity: 0 });
+          firstEl.classList.add('active');
+          gsap.to(firstEl, {
+            x: 0,
+            opacity: 1,
+            duration: 0.6,
+            ease: "power2.inOut",
+            onComplete: () => {
+              hideConfetti();
+              stopSong();
+            }
+          });
+        }
+      });
+    }
+
+    // Frog hop
+    function frogGreetingJump(el) {
+      el.classList.add('hop');
+      setTimeout(()=>el.classList.remove('hop'),500);
+      const audio = document.getElementById('frogSound');
+      audio.currentTime = 0; audio.play();
+      if (!musicPlaying) toggleMusic();
+    }
+
+    // Fly game
+    function startFlyGame() {
+      document.getElementById('flyNextBtn').style.display = 'none';
+      document.getElementById('fly').style.display = 'inline-block';
+      document.getElementById('fly-instr').style.display = 'block';
+      moveFly();
+    }
+    function moveFly() {
+      const fly = document.getElementById('fly');
+      fly.style.position = 'absolute';
+      fly.style.left = (50 + Math.random()*400)+'px';
+      fly.style.top = (100 + Math.random()*200)+'px';
+    }
+    function catchFly() {
+      document.getElementById('fly').style.display = 'none';
+      document.getElementById('fly-instr').textContent = `${frogName} caught the fly! Yum! 🐸🪰`;
+      document.getElementById('flyNextBtn').style.display = 'inline-block';
+    }
+
+    // Song toggle
+    function toggleSong() {
+      const song = document.getElementById('song'), bg = document.getElementById('bgMusic');
+      if (!songPlaying) {
+        if (bg && !bg.paused) bg.pause();
+        song.play(); songPlaying = true;
+      } else {
+        song.pause(); song.currentTime = 0; songPlaying = false;
+        if (bg && musicPlaying) bg.play();
+      }
+    }
+    function stopSong() {
+      const song = document.getElementById('song');
+      song.pause(); song.currentTime = 0; songPlaying = false;
+    }
+
+    // Music toggle
+    function toggleMusic() {
+      const music = document.getElementById('bgMusic');
+      if (!musicPlaying) {
+        music.play(); musicPlaying = true; musicBtn.textContent = '⏸️';
+      } else {
+        music.pause(); musicPlaying = false; musicBtn.textContent = '🎵';
+      }
+    }
+
+    // Birthday song
+    function playBirthdaySong() {
+      const s = document.getElementById('birthdaySong');
+      s.currentTime = 0; s.play();
+    }
+    function stopBirthdaySong() {
+      const s = document.getElementById('birthdaySong');
+      s.pause(); s.currentTime = 0;
+    }
+
+    // Confetti
+    function showConfetti() {
+      document.getElementById('confettiCanvas').style.display = 'block';
+    }
+    function hideConfetti() {
+      document.getElementById('confettiCanvas').style.display = 'none';
+    }
+
+    // Countdown
+    function startCountdown() {
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    }
+    function updateCountdown() {
+      const now = new Date();
+      let diff = Math.floor((nextHugDate - now) / 1000);
+      diff = diff < 0 ? 0 : diff;
+      const d = Math.floor(diff / 86400),
+            h = Math.floor((diff % 86400) / 3600),
+            m = Math.floor((diff % 3600) / 60),
+            s = diff % 60;
+      document.getElementById('countdown').textContent = `${d}d ${h}h ${m}m ${s}s`;
+    }
+
+    // Celebrate button
+    document.getElementById('celebrateBtn').addEventListener('click', ()=> {
+      confetti({ particleCount:150, spread:70, origin:{ y:0.6 }, colors:['#98dd96','#4e9c4f','#78c878'] });
+      frogs.forEach(f => {
+        gsap.to(f.position, { y: f.position.y + 20, duration:2, ease:"power1.out" });
+        gsap.to(f.material, { opacity:0, duration:2, ease:"power1.out" });
+      });
+    });
+
+    // 3D frog background
+    const container = document.getElementById('canvas-container');
+    const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    container.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    camera.position.z = 30;
+
+    function createEmojiTexture(emoji){
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+      ctx.font = '100px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(emoji, 64, 64);
+      return new THREE.CanvasTexture(canvas);
+    }
+    const frogTexture = createEmojiTexture('🐸');
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(1,1,1);
+    scene.add(dirLight);
+
+    const frogs = [];
+    for (let i = 0; i < 25; i++) {
+      const mat = new THREE.SpriteMaterial({ map: frogTexture, transparent:true, opacity:0.9 });
+      const spr = new THREE.Sprite(mat);
+      spr.position.set((Math.random()-0.5)*50, (Math.random()-0.5)*50, (Math.random()-0.5)*50);
+      const s = Math.random()*1.2 + 0.8;
+      spr.scale.set(s*2, s*2, 1);
+      spr.userData = {
+        speedX: Math.random()*0.02-0.01,
+        speedY: Math.random()*0.02-0.01,
+        speedZ: Math.random()*0.02-0.01,
+        rotationSpeed: Math.random()*0.01,
+        originalX: spr.position.x,
+        originalY: spr.position.y,
+        originalZ: spr.position.z,
+        floatDist: 2 + Math.random()*3
+      };
+      scene.add(spr);
+      frogs.push(spr);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = Date.now()*0.001;
+      frogs.forEach(f => {
+        f.position.x = f.userData.originalX + Math.sin(t*f.userData.speedX*10)*f.userData.floatDist;
+        f.position.y = f.userData.originalY + Math.sin(t*f.userData.speedY*10)*f.userData.floatDist;
+        f.position.z = f.userData.originalZ + Math.sin(t*f.userData.speedZ*10)*f.userData.floatDist;
+        f.rotation.z += f.userData.rotationSpeed;
+      });
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', ()=> {
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ---- EASTER EGG: Translate to Russian after 3 frog clicks ----
+    let frogClickCount = 0;
+    // The keys must match exactly the text in your HTML, including punctuation and spaces.
+    const translationMap = {
+      "Happy 20th Birthday, Vatraxaki MOU 💚": "С 20-летием, Ватраксаки МУ 💚",
+      "Let’s Play: Catch the Fly!": "Давай сыграем: Поймай муху!",
+      "Our Timeline": "Наша история",
+      "Love Notes": "Любовные записки",
+      "Our Memories": "Наши воспоминания",
+      "10 Reasons You are the Coolest Girlfriend": "10 причин, почему ты самая классная девушка",
+      "Happy Birthday, Vatraxaki MOU!": "С днём рождения, Ватраксаки МУ!",
+      "Next →": "Далее →",
+      "Play Our Song 🎶": "Воспроизвести нашу песню 🎶",
+      "Celebrate 🎉": "Праздновать 🎉",
+      "Hop Again 🔀": "Сыграть снова 🔀",
+      "Help Froggy catch the fly by clicking it!": "Помоги Лягушонку поймать муху, кликнув по ней!",
+      "(Even the happiest frogs need snacks!)": "(Даже самым счастливым лягушкам нужны закуски!)",
+      "My sweet Alisha,": "Моя милая Алиша,",
+      "Welcome to your magical frog birthday adventure!": "Добро пожаловать в волшебное лягушачье день рождения!",
+      "Click the frog for a surprise 🐸💚": "Кликни на лягушку для сюрприза 🐸💚",
+      "We first texted 💫": "Мы впервые переписывались 💫",
+      "We first met ❤️": "Мы впервые встретились ❤️",
+      "We got in a Relationship 🥰": "Мы начали встречаться 🥰",
+      "Every milestone with you is a leap my heart will never forget, My blackberry. 🐸💌":
+        "Каждое событие с тобой — прыжок, который моё сердце никогда не забудет, моя ежевичка. 🐸💌",
+      "Agapula mou, you are the lily pad my heart always returns to.":
+        "Агапула моя, ты — кувшинка, к которой всегда возвращается моё сердце.",
+      "You are my brightest star, my sweetest dream, and my favorite adventure.":
+        "Ты — моя ярчайшая звезда, самый сладкий сон и любимое приключение.",
+      "Thank you for being my calm in chaos, my laughter in silence, and my strength when I falter.":
+        "Спасибо, что ты мой покой в хаосе, мой смех в тишине и моя сила, когда я слабею.",
+      "I don’t just love you—I’m endlessly grateful for you.":
+        "Я не просто люблю тебя — я бесконечно благодарен тебе.",
+      "I love you with every ribbit, every giggle, and every leap, Vatraxaki MOU. 🐸🌹":
+        "Я люблю тебя каждым кваком, каждой улыбкой и каждым прыжком, Ватраксаки МУ. 🐸🌹",
+      "Every moment with you is a treasure.":
+        "Каждое мгновение с тобой — это сокровище.",
+      "Here’s to many more memories, my love!":
+        "Пусть будет ещё больше воспоминаний, моя любовь!",
+      "1. Your laugh makes my world brighter.": "1. Твой смех делает мой мир ярче.",
+      "2. You are sweet and kind.": "2. Ты милая и добрая.",
+      "3. Your hugs feel like home.": "3. Твои объятия как дом.",
+      "4. Your smile can fix any bad day.": "4. Твоя улыбка может исправить любой плохой день.",
+      "5. You make every ordinary moment extraordinary.": "5. Ты делаешь каждый обычный момент особенным.",
+      "6. You’re smart, silly, and beautiful inside and out.": "6. Ты умна, весела и красива внутри и снаружи.",
+      "7. You support me, dream with me, and challenge me.": "7. Ты поддерживаешь меня, мечтаешь со мной и бросаешь мне вызов.",
+      "8. You are hardworking and you never give up.": "8. Ты трудолюбива и никогда не сдаёшься.",
+      "9. With you, I can always be myself.": "9. С тобой я всегда могу быть собой.",
+      "10. You always trying to improve even on things you dont like. 💚":
+        "10. Ты всегда стараешься стать лучше, даже в том, что тебе не нравится. 💚",
+      "My love,I hope you have an amazing birthday even without me and may this year bring us more giggles, more adventures, and more cuddles.":
+        "Моя любовь, надеюсь, у тебя будет потрясающий день рождения даже без меня, и пусть этот год принесёт нам больше смеха, приключений и объятий.",
+      "No matter where you are, my heart is always hugging you.":
+        "Где бы ты ни была, моё сердце всегда обнимает тебя.",
+      "Next hug in:": "Следующее объятие через:",
+      "I love you more every hop of the way.":
+        "Я люблю тебя всё больше с каждым прыжком.",
+      "Forever your Dura 🐸❤️": "Навсегда твой Дура 🐸❤️",
+      "Froggy caught the fly! Yum! 🐸🪰": "Лягушонок поймал муху! Ням! 🐸🪰"
+    };
+
+    function translateSiteToRussian() {
+      // Document title
+      document.title = "С 20-летием, Ватраксаки МУ! 🐸💚";
+      // Recursively process elements
+      function processNode(node) {
+        if (node.nodeType === 3) {
+          // Text node
+          const trimmed = node.textContent.trim();
+          if(translationMap[trimmed]) node.textContent = node.textContent.replace(trimmed, translationMap[trimmed]);
+        } else if (node.nodeType === 1) {
+          // Element node
+          if (node.tagName === "BUTTON" || node.tagName === "LI" || node.tagName === "P" || node.tagName === "H1" || node.tagName === "SPAN") {
+            const original = node.innerText.trim();
+            if (translationMap[original]) node.innerText = translationMap[original];
+          }
+          Array.from(node.childNodes).forEach(processNode);
+        }
+      }
+      processNode(document.getElementById("main-content"));
+      // Fix possible multi-line paragraphs
+      document.querySelectorAll('li, p, h1, button, span').forEach(el => {
+        const txt = el.innerText.trim();
+        if (translationMap[txt]) el.innerText = translationMap[txt];
+      });
+    }
+
+    document.querySelectorAll('.frog-emoji').forEach(frog => {
+      frog.addEventListener('click', () => {
+        frogClickCount = (frogClickCount || 0) + 1;
+        if (frogClickCount === 3) {
+          translateSiteToRussian();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
