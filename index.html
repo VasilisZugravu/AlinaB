@@ -22,6 +22,9 @@
       z-index: 10000;
       transform: translate(-50%, -50%);
       transition: transform 0.1s ease;
+      user-select: none;
+      touch-action: none;
+      /* REMOVED display: none! */
     }
     #canvas-container {
       position: fixed;
@@ -177,6 +180,37 @@
       align-items: center;
       justify-content: center;
     }
+    /* --- MOBILE SCROLL FIX --- */
+    @media (max-width: 700px) {
+      .chapter {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw;
+        height: 100vh;
+        min-height: 100vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 20px 3vw 80px 3vw;
+      }
+      .gallery img {
+        width: 96vw;
+        max-width: 270px;
+        min-width: 48vw;
+        height: 120px;
+        border-radius: 12px;
+      }
+      h1 { font-size: 1.2em; }
+      .reasons-list, .milestones { font-size: 1em; max-width: 98vw; padding: 10px 6px; border-radius: 12px; }
+      .frog-emoji { font-size: 2em; }
+      button { font-size: 1em; min-width: 60vw; padding: 12px 0; margin: 12px auto 0 auto; border-radius: 16px; }
+      #musicBtn { width: 38px; height: 38px; font-size: 1em; top: 8px; right: 8px; }
+      #fly { font-size: 1.4em; }
+    }
+    @media (max-width: 400px) {
+      h1 { font-size: 1.08em; }
+      .reasons-list,.milestones { font-size: .94em; }
+      .gallery img { height: 80px;}
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
@@ -184,7 +218,6 @@
 </head>
 <body>
   <div id="heartCursor">❤️</div>
-
   <div id="canvas-container"></div>
   <div id="main-content">
     <audio id="bgMusic" src="background-song.mp3" loop preload="auto"></audio>
@@ -202,7 +235,6 @@
       </div>
       <button onclick="nextChapter()">Next →</button>
     </div>
-
     <!-- 2. Fly Game -->
     <div class="chapter" id="chapter-2">
       <div class="frog-emoji" onclick="frogGreetingJump(this)">🐸</div>
@@ -213,7 +245,6 @@
       </div>
       <button id="flyNextBtn" style="display:none;" onclick="nextChapter()">Next →</button>
     </div>
-
     <!-- 3. Timeline -->
     <div class="chapter" id="chapter-3">
       <div class="frog-emoji" onclick="frogGreetingJump(this)">🌿</div>
@@ -226,7 +257,6 @@
       <p>Every milestone with you is a leap my heart will never forget, My blackberry. 🐸💌</p>
       <button onclick="nextChapter()">Next →</button>
     </div>
-
     <!-- 4. Love Notes -->
     <div class="chapter" id="chapter-4">
       <div class="frog-emoji" onclick="frogGreetingJump(this)">💌</div>
@@ -240,7 +270,6 @@
       </div>
       <button onclick="nextChapter()">Next →</button>
     </div>
-
     <!-- 5. Gallery -->
     <div class="chapter" id="chapter-5">
       <div class="frog-emoji" onclick="frogGreetingJump(this)">📸</div>
@@ -254,7 +283,6 @@
       <p>Every moment with you is a treasure.<br><em>Here’s to many more memories, my love!</em></p>
       <button onclick="nextChapter()">Next →</button>
     </div>
-
     <!-- 6. Reasons & Song -->
     <div class="chapter" id="chapter-6">
       <div class="frog-emoji" onclick="frogGreetingJump(this)">🎵</div>
@@ -275,7 +303,6 @@
       <audio id="song" src="Project Name-VEED.mp3"></audio>
       <button onclick="nextChapter()">Next →</button>
     </div>
-
     <!-- 7. Final & Countdown -->
     <div class="chapter" id="chapter-7">
       <div class="frog-emoji" onclick="frogGreetingJump(this)">🎂</div>
@@ -293,14 +320,19 @@
       <button onclick="restart()">Hop Again 🔀</button>
     </div>
   </div>
-
   <script>
-    // Heart cursor
+    // Heart cursor (shows on all devices)
     const heartCursor = document.getElementById('heartCursor');
     document.addEventListener('mousemove', e => {
       heartCursor.style.left = e.clientX + 'px';
       heartCursor.style.top = e.clientY + 'px';
     });
+    document.addEventListener('touchmove', function(e) {
+      if (e.touches && e.touches[0]) {
+        heartCursor.style.left = e.touches[0].clientX + 'px';
+        heartCursor.style.top = e.touches[0].clientY + 'px';
+      }
+    }, {passive:true});
 
     // State
     let current = 1, songPlaying = false, musicPlaying = false;
